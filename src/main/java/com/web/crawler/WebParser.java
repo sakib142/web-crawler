@@ -12,17 +12,18 @@ import org.jsoup.select.Elements;
 
 public class WebParser {
 
-	public void parse(String httpURL) {
+	public void parseHtmlFile(String httpURL) {
 
 		URL url = null;
 		URLConnection urlConnection = null;
 		try {
+
 			url = new URL(httpURL);
 			urlConnection = url.openConnection();
 			InputStream input = urlConnection.getInputStream();
 			Document doc = Jsoup.parse(input, "UTF-8", "");
-			Elements elements = doc.select("a");
-			elements.forEach(anchorLink -> System.out.println(anchorLink.attr("href")));
+			parse(doc, "a", "href");
+			parse(doc, "img", "src");
 
 		} catch (MalformedURLException malformedURLException) {
 			malformedURLException.printStackTrace();
@@ -31,4 +32,8 @@ public class WebParser {
 		}
 	}
 
+	private void parse(Document doc, String tagName, String tagAttribute) {
+		Elements elements = doc.select(tagName);
+		elements.forEach(anchorLink -> System.out.println(anchorLink.attr(tagAttribute)));
+	}
 }
