@@ -1,13 +1,8 @@
 package com.web.crawler;
 
-/**
- * Hello world!
- *
- */
-public class App 
-{
-    public static void main( String[] args )
-    {
-        System.out.println( "Hello World!" );
-    }
+public class App {
+	public static void main(String[] args) {
+		WebParser webParser = new WebParser();
+		webParser.parse("http://www.mkyong.com/");
+	}
 }
