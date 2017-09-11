@@ -16,11 +16,11 @@ Java Web Crawler
 	```
 	This will create a jar file inside the target folder --> crawler-0.0.1-SNAPSHOT.jar
    
-  3) To execute the jar you need to open the jar using some extractor, Inside the jar go to the META-INF folder and open the MANIFEST.MF file and add the main class detail inside it, Below is the Example
-	```bash
+  3) To execute the jar you need to open the jar using some extractor, Inside the jar go to the META-INF folder and open the MANIFEST.MF file and add the main class detail inside it, Below is the Example :
+	
 		Class-Path: .
 		Main-Class: com.web.crawler.CrawlerStart
-	```
+	
 	
   4) Now run the jar using this command
 	```bash
