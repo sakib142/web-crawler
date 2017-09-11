@@ -1,5 +1,7 @@
 package com.web.crawler.service;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,13 +21,12 @@ import com.web.crawler.util.SiteMapData;
 
 public class CrawlerService {
 
-	public CrawlerFilter urlFilter;
-	public Set<String> crawledUrls;
+	private CrawlerFilter urlFilter;
+	private Set<String> crawledUrls;
 	private ExecutorService crawlService;
-	public final LinkedBlockingQueue<String> linksQueue;
-	public CyclicBarrier barrier = new CyclicBarrier(2);
-
-	public List<SiteMapData> data;
+	protected final LinkedBlockingQueue<String> linksQueue;
+	protected CyclicBarrier barrier;
+	private List<SiteMapData> data;
 
 	public CrawlerService(CrawlerFilter urlFilter) {
 		this.urlFilter = urlFilter;
@@ -34,6 +35,7 @@ public class CrawlerService {
 		// create thread pool
 		crawlService = Executors.newCachedThreadPool();
 		data = new CopyOnWriteArrayList<SiteMapData>();
+		barrier = new CyclicBarrier(2);
 	}
 
 	public void addUrl(String url) {
@@ -68,7 +70,6 @@ public class CrawlerService {
 
 		}
 
-		// shut down when the last url have been added to the pool
 		crawlService.shutdown();
 
 		try {
@@ -79,7 +80,16 @@ public class CrawlerService {
 		}
 
 		String siteMapData = new Gson().toJson(data);
-		System.out.println(siteMapData);
+		String workingDir = System.getProperty("user.dir");
+		String siteMapDir = workingDir + "crawlerSiteMap.json";
+		Logger.getLogger(CrawlerService.class.getName()).log(Level.INFO,
+				"Crawler Structured site map file location ------->" + siteMapDir);
+
+		try (FileWriter file = new FileWriter(siteMapDir)) {
+			file.write(siteMapData.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 

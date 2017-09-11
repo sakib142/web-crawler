@@ -1,9 +1,11 @@
 package com.web.crawler.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,15 +15,25 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.web.crawler.filter.CrawlerUrlFilter;
+import com.web.crawler.util.SiteMapData;
+
 public class CrawlerServiceTest {
 
+	@Mock
 	public ExecutorService executor;
 
 	@Mock
 	CyclicBarrier barrier;
+
+	@Mock
+	LinkedBlockingQueue<String> linksQueue;
 	
+	@Mock
+	CrawlerUrlFilter crawlerUrlFIlter;
+
 	@InjectMocks
-	private CrawlerService crawlerService;
+	private CrawlerService crawlerService = new CrawlerService(crawlerUrlFIlter);
 
 	@BeforeClass
 	public void beforeClass() {
@@ -31,13 +43,18 @@ public class CrawlerServiceTest {
 
 	@BeforeMethod
 	public void beforeMethod() {
-		executor = Executors.newFixedThreadPool(2);
-		crawlerService.addUrl("www.test.com");
-		/*List<SiteMapData> siteMapData = new ArrayList<>();
+	    crawlerService.addUrl("www.test.com");
+		List<SiteMapData> siteMapData = new ArrayList<>();
 		CrawlerWebParserJob callable = new CrawlerWebParserJob("", crawlerService, siteMapData);
-		Mockito.when(executor.submit(callable)).thenThrow(new RuntimeException());*/
+		Mockito.when(executor.submit(callable)).thenReturn(null);
+
+	}
+
+	@Test
+	public void testRun() {
 		try {
-			Mockito.when(barrier.await()).thenReturn(0);
+			Mockito.when(linksQueue.isEmpty()).thenReturn(false);
+			Mockito.when(barrier.await()).thenThrow(new RuntimeException());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -45,12 +62,8 @@ public class CrawlerServiceTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	@Test
-	public void testRun() {
-		//crawlerService.crawl();
-		
+		crawlerService.crawl();
+
 	}
 
 }

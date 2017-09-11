@@ -21,9 +21,9 @@ import com.web.crawler.util.TagAttributesInfo;
 
 public class CrawlerWebParserJob implements Runnable {
 
-	protected CrawlerService crawler = null;
-	protected String urlToCrawl = null;
-	protected List<SiteMapData> siteMapData = null;
+	private CrawlerService crawler = null;
+	private String urlToCrawl = null;
+	private List<SiteMapData> siteMapData = null;
 
 	public CrawlerWebParserJob(String urlToCrawl, CrawlerService crawler, List<SiteMapData> siteMapData) {
 		this.urlToCrawl = urlToCrawl;
@@ -54,13 +54,13 @@ public class CrawlerWebParserJob implements Runnable {
 
 			Map<String, TagAttributesInfo> map = new HashMap<String, TagAttributesInfo>();
 
-				List<String> anchorAttrs = new ArrayList<String>();
-				anchorAttrs.add("href");
-				map.put("a", this.getAttributeInfo(anchorAttrs));
+			List<String> anchorAttrs = new ArrayList<String>();
+			anchorAttrs.add("href");
+			map.put("a", this.getAttributeInfo(anchorAttrs));
 
-				List<String> imgAttrs = new ArrayList<String>();
-				imgAttrs.add("src");
-				map.put("img", this.getAttributeInfo(imgAttrs));
+			List<String> imgAttrs = new ArrayList<String>();
+			imgAttrs.add("src");
+			map.put("img", this.getAttributeInfo(imgAttrs));
 
 			SiteMapData data = new SiteMapData();
 			data.setNodeUrl(baseUrl);
@@ -102,7 +102,6 @@ public class CrawlerWebParserJob implements Runnable {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					System.out.println(" - " + normalizedUrl);
 					attributeInfo.getTagMap().put(index, normalizedUrl);
 				});
 			}
@@ -126,24 +125,6 @@ public class CrawlerWebParserJob implements Runnable {
 		tagInfo.setTagMap(tagContentMap);
 
 		return tagInfo;
-	}
-
-	private void parse1(Document doc, String tagName, String tagAttribute, String baseURL) {
-		Elements elements = doc.select(tagName);
-
-		elements.forEach(anchorLink -> {
-			String linkUrl = anchorLink.attr(tagAttribute);
-			String normalizedUrl = UrlNormalizer.normalize(linkUrl, baseURL);
-			try {
-				if (tagName.equalsIgnoreCase("a")) {
-					crawler.linksQueue.put(normalizedUrl);
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			System.out.println(" - " + normalizedUrl);
-		});
-
 	}
 
 }

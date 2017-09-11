@@ -2,7 +2,7 @@ package com.web.crawler.filter;
 
 public class CrawlerUrlFilter implements CrawlerFilter {
 
-	protected String domainUrl = null;
+	private String domainUrl = null;
 
 	public CrawlerUrlFilter(String domainUrl) {
 		this.domainUrl = domainUrl;
